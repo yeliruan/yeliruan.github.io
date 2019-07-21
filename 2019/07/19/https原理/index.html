@@ -14,10 +14,16 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="HTTPS相对HTTP来说更安全，因为HTTP是明文传输，而HTTPS相当于是在HHTP的基础上加了ssl(Secure Sockets Layer 安全套接层),ssl在传输层对网络进行加密 计算机网络面临的安全性威胁被动攻击和主动攻击被动攻击是指攻击者从网络上窃听他人的通信内容，通常把这类攻击称为截获，在被动攻击中攻击者只是观察和窃听某一协议数据单元而不干扰信息流。主动攻击分为一下几种方式：篡">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-19T14:04:46.083Z">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/imgs/https/5.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/imgs/https/1.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/imgs/https/2.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/imgs/https/3.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/imgs/https/4.png">
+<meta property="og:updated_time" content="2019-07-21T03:12:56.585Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTPS原理">
 <meta name="twitter:description" content="HTTPS相对HTTP来说更安全，因为HTTP是明文传输，而HTTPS相当于是在HHTP的基础上加了ssl(Secure Sockets Layer 安全套接层),ssl在传输层对网络进行加密 计算机网络面临的安全性威胁被动攻击和主动攻击被动攻击是指攻击者从网络上窃听他人的通信内容，通常把这类攻击称为截获，在被动攻击中攻击者只是观察和窃听某一协议数据单元而不干扰信息流。主动攻击分为一下几种方式：篡">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/19/imgs/https/5.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -87,28 +93,31 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>HTTPS相对HTTP来说更安全，因为HTTP是明文传输，而HTTPS相当于是在HHTP的基础上加了ssl(Secure Sockets Layer 安全套接层),ssl在传输层对网络进行加密</p>
-<h2 id="计算机网络面临的安全性威胁"><a href="#计算机网络面临的安全性威胁" class="headerlink" title="计算机网络面临的安全性威胁"></a>计算机网络面临的安全性威胁</h2><h3 id="被动攻击和主动攻击"><a href="#被动攻击和主动攻击" class="headerlink" title="被动攻击和主动攻击"></a>被动攻击和主动攻击</h3><p>被动攻击是指攻击者从网络上窃听他人的通信内容，通常把这类攻击称为截获，在被动攻击中攻击者只是观察和窃听某一协议数据单元而不干扰信息流。<br>主动攻击分为一下几种方式：篡改、恶意程序、拒绝服务。</p>
-<p>当客户端传输信息给服务端的时候，如果没有加密算法，信息容易被截获甚至篡改，为了保障通信的安全，目前主要的加密方式有对称加密和非对称加密两种。</p>
+<h2 id="计算机网络面临的安全性威胁"><a href="#计算机网络面临的安全性威胁" class="headerlink" title="计算机网络面临的安全性威胁"></a>计算机网络面临的安全性威胁</h2><h3 id="被动攻击和主动攻击"><a href="#被动攻击和主动攻击" class="headerlink" title="被动攻击和主动攻击"></a>被动攻击和主动攻击</h3><p><img src="../imgs/https/5.png" alt><br>被动攻击是指攻击者从网络上窃听他人的通信内容，通常把这类攻击称为截获，在被动攻击中攻击者只是观察和窃听某一协议数据单元而不干扰信息流。<br>主动攻击分为一下几种方式：篡改、恶意程序、拒绝服务。</p>
+<h3 id="对称加密和非对称加密"><a href="#对称加密和非对称加密" class="headerlink" title="对称加密和非对称加密"></a>对称加密和非对称加密</h3><p>当客户端传输信息给服务端的时候，如果没有加密算法，信息容易被截获甚至篡改，为了保障通信的安全，目前主要的加密方式有对称加密和非对称加密两种。</p>
 <p>对称加密：加密密钥和解密密钥是相同的 </p>
 <p>非对称加密：私钥是保密的，公钥向公众公开，信息发送方用公钥加密信息，发送给信息接受方，接收方用私钥解密信息。</p>
-<p>在实际的web通信中，只要发送方和接收方知道密钥，而其他第三方不知道，那么这种使用对称加密的方式就是可靠的，但是在实际的应用场景中，用多个客户端请求同一个服务器，当他们都使用同一个加密算法，相同都密钥的时候，这无异于是不安全的</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+<p>在实际的web通信中，只要发送方和接收方知道密钥，而其他第三方不知道，那么这种使用对称加密的方式就是可靠的，但是在实际的应用场景中，用多个客户端请求同一个服务器，当他们都使用同一个加密算法，相同都密钥的时候，这无异于是不安全的<br><img src="../imgs/https/1.png" alt><br>所以实际上A端、B端。。。使用哪种加密算法不应该是固定的，而应该随机生成，像下面这个亚子<br><img src="../imgs/https/2.png" alt><br>所以客户端和服务器又一个协商用那个加密算法的过程，那么，，这个协商过程，也设计到信息传输，是不是也不安全呢。。。</p>
+<p>所以协商过程也得加个密吧？协商过程怎么加密？不能再用对称加密了，不然这问题还就用无止境了。看看上图这网络结构，非对称加密还挺适合的，server有一个私钥，而其他网络节点有公钥，用私钥加密的信息公钥都能解，而公钥加密的信息只有私钥能解，服务器只要自己保存好私钥，把公钥公开，其他客户端就能用公钥加密了。</p>
+<p>因此https采用非对称加密算法来解决对称加密的协商过程那么，客户端要如何获取公钥呢？如果服务器将公钥分发，势必会出现公钥被劫持的情况吧，黑客可以劫持公钥，对服务器发出的信息进行破解<br><img src="../imgs/https/3.png" alt><br>所以我们希望客户端看到的是真真正正的服务器发送过来的公钥，服务端看到的是真正客户端发送过来的信息，希望信息不被截获和篡改。这里就需要第三方对信息双方的身份进行一个确认，这就是ssl 证书的作用，ssl证书中包含了证书办法机构，有效期，公钥、证书持有者、签名，通过第三方的校验保证了身份的合法，解决了公钥获取的安全性<br><img src="../imgs/https/4.png" alt><br>如上图所示，在第 ② 步时服务器发送了一个SSL证书给客户端，SSL 证书中包含的具体内容有证书的颁发机构、有效期、公钥、证书持有者、签名，通过第三方的校验保证了身份的合法，解决了公钥获取的安全性</p>
+<p>以浏览器为例说明如下整个的校验过程：</p>
+<p>（1）首先浏览器读取证书中的证书所有者、有效期等信息进行一一校验</p>
+<p>（2）浏览器开始查找操作系统中已内置的受信任的证书发布机构CA，与服务器发来的证书中的颁发者CA比对，用于校验证书是否为合法机构颁发 </p>
+<p>（3）如果找不到，浏览器就会报错，说明服务器发来的证书是不可信任的。</p>
+<p>（4）如果找到，那么浏览器就会从操作系统中取出颁发者CA的公钥，然后对服务器发来的证书里面的签名进行解密</p>
+<p>（5）浏览器使用相同的hash算法计算出服务器发来的证书的hash值，将这个计算的hash值与证书中签名做对比</p>
+<p>（6）对比结果一致，则证明服务器发来的证书合法，没有被冒充</p>
+<p>（7）此时浏览器就可以用发送过来的公钥加密对称加密算法的密钥，并把公钥加密后的密钥发送给服务器</p>
+<p>（8）服务器接收到之后用私钥解析得到对称加密算法的密钥，并用该密钥加密要传输的数据给浏览器</p>
+<p>（9）浏览器接受到数据后，用它的对称密钥解析数据</p>
+<p>总结一下：<br>HTTPS要使客户端与服务器端的通信过程得到安全保证，必须使用的对称加密算法，但是协商对称加密算法的过程，需要使用非对称加密算法来保证安全，然而直接使用非对称加密的过程本身也不安全，会有中间人篡改公钥的可能性，所以客户端与服务器不直接使用公钥，而是使用数字证书签发机构颁发的证书来保证非对称加密过程本身的安全。这样通过这些机制协商出一个对称加密算法，就此双方使用该算法进行加密解密。从而解决了客户端与服务器端之间的通信安全问题。</p>
+<h3 id="https协议的优缺点"><a href="#https协议的优缺点" class="headerlink" title="https协议的优缺点"></a>https协议的优缺点</h3><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>使用https可以认证用户和服务器，确保数据发送到正确的客户机和服务器；<br>https协议是由SSL+http协议构建的课进行加密传输、身份认证的网络协议，要比http协议安全，可防止数据在传输过程中不被窃取、改变，确保数据的完整性；</p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>https握手阶段比较费时，会使页面加载时间延长50%，增加10%～20%的耗电。<br>https缓存不如http高效，会增加数据开销。<br>SSL证书需要费用，越强大的证书费用越高<br>SSL证书需要绑定IP，不能在同一个ip上绑定多个域名，ipv4支持不了这种消耗</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/19/https原理/" data-id="cjya6jhyf0001gen86d8i8xo4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/07/19/https原理/" data-id="cjyce0vvt0001e5n823qbww93" class="article-share-link">Share</a>
       
       
     </footer>
